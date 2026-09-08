@@ -3,7 +3,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.initialization import cors_origins, initialize_database
 
 initialize_database()
-app = FastAPI(title="CUN Business API", version="1.0.0")
+
+# This order is used by Swagger UI instead of the order in which routers are registered.
+openapi_tags = [
+    {"name": "Autenticación"},
+    {"name": "Alcances"},
+    {"name": "Anónimos"},
+    {"name": "Encuestas"},
+    {"name": "Orígenes CORS"},
+    {"name": "Preguntas"},
+    {"name": "Respuestas"},
+    {"name": "Tipos"},
+    {"name": "Usuarios"},
+    {"name": "Valores"},
+]
+
+app = FastAPI(title="CUN Business API", version="1.0.0", openapi_tags=openapi_tags)
 # The origin allow-list is read from sd_a1bb_a6baddf4c35a at application startup.
 app.add_middleware(CORSMiddleware, allow_origins=cors_origins(), allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 

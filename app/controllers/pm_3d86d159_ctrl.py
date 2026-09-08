@@ -4,5 +4,5 @@ from app.schemas.pm_3d86d159_schema import CreateSchema, UpdateSchema, ResponseS
 
 router = create_crud_router(
     "/answers", ["Respuestas"], Pm3d86d159Service, CreateSchema, UpdateSchema, ResponseSchema,
-    {"create", "update", "delete"},
+    {"list", "page", "create", "update", "delete"},
 )
