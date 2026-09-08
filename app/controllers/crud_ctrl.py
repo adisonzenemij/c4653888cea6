@@ -1,5 +1,6 @@
 from typing import Callable
 from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.config.database import get_db
@@ -22,7 +23,9 @@ def create_crud_router(
     if "page" in operations:
         def page_items(offset: int = Query(0, ge=0), limit: int = Query(25, ge=1, le=100), db: Session = Depends(get_db)):
             items, total = service_factory(db).page(offset, limit)
-            return {"offset": offset, "limit": limit, "total": total, "items": items}
+            return jsonable_encoder(
+                {"offset": offset, "limit": limit, "total": total, "items": items}
+            )
         router.add_api_route("/page", page_items, methods=["GET"], response_model=dict, summary="Select paginado")
 
     if "create" in operations:

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.config.database import get_db
 from app.controllers.crud_ctrl import create_crud_router
-from app.models.entities_model import Pm0acc84aeModel, Pm9a582ff6Model
+from app.models.entities_model import Pm0acc84aeModel, Pm0d3dc00eModel, Pm9a582ff6Model
 from app.services.pm_4d802b91_srvc import Pm4d802b91Service
 from app.schemas.pm_4d802b91_schema import CreateSchema, UpdateSchema, ResponseSchema
 router = create_crud_router("/surveys", ["Encuestas"], Pm4d802b91Service, CreateSchema, UpdateSchema, ResponseSchema, {"list", "page", "create", "update", "delete"})
@@ -40,4 +40,17 @@ def public_survey_details(survey_id: str, db: Session = Depends(get_db)):
             .order_by(Pm9a582ff6Model.fd_order)
         )
     ) if question_ids else []
-    return {"questions": questions, "values": values}
+    type_names = dict(db.execute(select(Pm0d3dc00eModel.id_universal, Pm0d3dc00eModel.fd_format)))
+    public_questions = [
+        {
+            "id_universal": question.id_universal,
+            "fd_ask": question.fd_ask,
+            "fd_order": question.fd_order,
+            "fd_required": question.fd_required,
+            "pm_0d3dc00e": question.pm_0d3dc00e,
+            "pm_4d802b91": question.pm_4d802b91,
+            "fd_format": type_names.get(question.pm_0d3dc00e),
+        }
+        for question in questions
+    ]
+    return {"questions": public_questions, "values": values}
