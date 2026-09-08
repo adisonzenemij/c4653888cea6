@@ -59,6 +59,7 @@ class Pm0acc84aeModel(UuidModel, Base):
 class Pm9a582ff6Model(UuidModel, Base):
     __tablename__ = "pm_96ee_18d1272728c6"
     fd_option: Mapped[str] = mapped_column(Text)
+    fd_order: Mapped[int] = mapped_column(Integer)
     pm_0acc84ae: Mapped[str] = mapped_column(ForeignKey("pm_898e_48db3e1fb7b8.id_universal"))
 
 
