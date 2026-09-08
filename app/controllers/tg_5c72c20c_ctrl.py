@@ -7,8 +7,10 @@ from app.schemas.tg_5c72c20c_schema import CreateSchema, UpdateSchema, ResponseS
 from app.security.security import create_access_token, verify_password
 from app.services.tg_5c72c20c_srvc import Tg5c72c20cService
 
-router = APIRouter(tags=["Autenticación"])
-@router.post("/auth/login")
+router = APIRouter()
+
+
+@router.post("/auth/login", tags=["Autenticación"])
 def login(payload: LoginSchema, db: Session = Depends(get_db)):
     user = Tg5c72c20cRepository(db).get_by_login(payload.fd_login)
     if not user or not verify_password(payload.fd_passd, user.fd_passd):

@@ -18,7 +18,7 @@ from app.controllers.pm_9a582ff6_ctrl import router as value_router
 from app.controllers.pm_3d86d159_ctrl import router as answer_router
 
 for router in (cors_router, user_router, anonymous_router, scope_router, type_router, survey_router, question_router, value_router, answer_router):
-    app.include_router(router, prefix="/api/v1")
+    app.include_router(router, prefix="/api")
 
 
 @app.get("/health", tags=["Health"])

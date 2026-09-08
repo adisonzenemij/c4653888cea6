@@ -1,18 +1,18 @@
-<h1 align="center">🔥 Proyecto Backend 🧑‍💻</h1>
+﻿<h1 align="center">ðŸ”¥ Proyecto Backend ðŸ§‘â€ðŸ’»</h1>
 
-## Introducción
+## IntroducciÃ³n
 
 ## Requisitos
 
 - Python 3.13.x
 
-## Instalación
+## InstalaciÃ³n
 
 ```yml
 Clonar repositorio: git clone <project>
 ```
 
-## Configuración
+## ConfiguraciÃ³n
 
 ```yml
 Entorno virtual: python -m venv .venv
@@ -41,11 +41,11 @@ Requerimientos: .venv\Scripts\python -m pip install -r requirements.txt
 La API usa SQLite por defecto (`business.db`). Para MySQL, copie `.env.example` a `.env` y configure `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_PORT` y `DB_NAME`; estas variables tienen prioridad sobre `DATABASE_URL`. Si la base no existe, la API la crea con `CHARACTER SET utf8mb4` y `COLLATE utf8mb4_general_ci` antes de crear las tablas.
 Al iniciar, crea las tablas y carga los valores iniciales. Los CORS se leen de `sd_a1bb_a6baddf4c35a` durante el arranque.
 
-AutenticaciÃ³n: `POST /api/v1/auth/login` con `{"fd_login":"root","fd_passd":"<contraseÃ±a>"}` devuelve un Bearer JWT. Todas las rutas de recursos exigen ese token.
+AutenticaciÃƒÂ³n: `POST /api/auth/login` con `{"fd_login":"root","fd_passd":"<contraseÃƒÂ±a>"}` devuelve un Bearer JWT. Todas las rutas de recursos exigen ese token.
 
 Cada recurso habilitado ofrece `GET /`, `GET /page?offset=0&limit=25`, `POST /`, `PUT /{id_universal}` y `DELETE /{id_universal}`, conforme a la matriz entregada.
 
-`pm_answer` se publica como `/api/v1/answers` y, segÃºn su matriz, expone creaciÃ³n, actualizaciÃ³n y eliminaciÃ³n.
+`pm_answer` se publica como `/api/answers` y, segÃƒÂºn su matriz, expone creaciÃƒÂ³n, actualizaciÃƒÂ³n y eliminaciÃƒÂ³n.
 
 ## Ejecuciones
 
@@ -58,7 +58,7 @@ Run: .venv\Scripts\python -m uvicorn main:app --host 0.0.0.0 --port 0000 --reloa
 ## Comandos de Windows
 
 ```yml
-# Permitir scripts solo en la sesión actual
+# Permitir scripts solo en la sesiÃ³n actual
 PowerShell: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 ```
 
@@ -73,7 +73,7 @@ Verificar entorno: python -m site
 Requerimientos: .venv\Scripts\python -m pip install -r requirements.txt
 ```
 
-## Documentación
+## DocumentaciÃ³n
 
 ```yml
 ReDoc: http://0.0.0.0:0000/redoc
@@ -87,10 +87,11 @@ Arquitectura: docs/arquitectura.md
 Comando: docker compose -f compose.yaml up -d --build
 ```
 
-## Páginas oficiales
+## PÃ¡ginas oficiales
 
 <div align="center">
     <a href="https://www.adisonjimenez.net" target="_blank">
         <span>Web principal</span>
     </a>
 </div>
+
