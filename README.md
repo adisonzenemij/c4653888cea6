@@ -38,7 +38,7 @@ Requerimientos: .venv\Scripts\python -m pip install -r requirements.txt
 
 ## API
 
-La API usa SQLite por defecto (`business.db`). Para MySQL, copie `.env.example` a `.env` y configure `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_PORT` y `DB_NAME`; estas variables tienen prioridad sobre `DATABASE_URL`.
+La API usa SQLite por defecto (`business.db`). Para MySQL, copie `.env.example` a `.env` y configure `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_PORT` y `DB_NAME`; estas variables tienen prioridad sobre `DATABASE_URL`. Si la base no existe, la API la crea con `CHARACTER SET utf8mb4` y `COLLATE utf8mb4_general_ci` antes de crear las tablas.
 Al iniciar, crea las tablas y carga los valores iniciales. Los CORS se leen de `sd_a1bb_a6baddf4c35a` durante el arranque.
 
 AutenticaciÃ³n: `POST /api/v1/auth/login` con `{"fd_login":"root","fd_passd":"<contraseÃ±a>"}` devuelve un Bearer JWT. Todas las rutas de recursos exigen ese token.

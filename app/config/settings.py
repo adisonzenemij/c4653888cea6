@@ -23,7 +23,7 @@ class Settings(BaseSettings):
             raise ValueError("DB_USER y DB_PASS son obligatorios cuando se define DB_HOST")
         user = quote_plus(self.db_user)
         password = quote_plus(self.db_pass)
-        return f"mysql+pymysql://{user}:{password}@{self.db_host}:{self.db_port}/{self.db_name}"
+        return f"mysql+pymysql://{user}:{password}@{self.db_host}:{self.db_port}/{self.db_name}?charset=utf8mb4"
 
 
 settings = Settings()
