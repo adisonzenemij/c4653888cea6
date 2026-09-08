@@ -1,4 +1,5 @@
 from urllib.parse import quote_plus
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,9 +10,9 @@ class Settings(BaseSettings):
     db_pass: str | None = None
     db_port: int = 3306
     db_name: str = "business"
-    jwt_secret_key: str = "change-this-in-production"
-    jwt_algorithm: str = "HS256"
-    jwt_access_token_minutes: int = 60
+    jwt_secret_key: str = Field(min_length=32)
+    jwt_algorithm: str
+    jwt_access_token_minutes: int
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
