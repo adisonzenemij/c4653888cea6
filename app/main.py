@@ -27,13 +27,16 @@ from app.controllers.tg_5c72c20c_ctrl import router as user_router
 from app.controllers.pm_1a4a8cd7_ctrl import router as anonymous_router
 from app.controllers.pm_8e417bb2_ctrl import router as scope_router
 from app.controllers.pm_0d3dc00e_ctrl import router as type_router
-from app.controllers.pm_4d802b91_ctrl import router as survey_router
+from app.controllers.pm_4d802b91_ctrl import public_router as public_survey_router, router as survey_router
+from app.controllers.public_participation_ctrl import router as public_participation_router
 from app.controllers.pm_0acc84ae_ctrl import router as question_router
 from app.controllers.pm_9a582ff6_ctrl import router as value_router
 from app.controllers.pm_3d86d159_ctrl import router as answer_router
 
 for router in (cors_router, user_router, anonymous_router, scope_router, type_router, survey_router, question_router, value_router, answer_router):
     app.include_router(router, prefix="/api")
+app.include_router(public_survey_router, prefix="/api")
+app.include_router(public_participation_router, prefix="/api")
 
 
 @app.get("/health", tags=["Health"])
