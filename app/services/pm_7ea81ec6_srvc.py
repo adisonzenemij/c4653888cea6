@@ -74,10 +74,8 @@ class Pm7ea81ec6Service(BaseService):
         hits = response.get("hits", {}).get("hits", [])
         matching = [hit for hit in hits if str(hit.get("_source", {}).get("NIT", "")) == document]
         separated = [hit for hit in matching if "separad" in str(hit.get("_source", {}).get("puntoEntrada", "")).lower()]
-        consolidated = [hit for hit in matching if "consolidad" in str(hit.get("_source", {}).get("puntoEntrada", "")).lower()]
         key = lambda hit: str(hit.get("_source", {}).get("fechaCorte", ""))
-        selected = sorted(separated, key=key, reverse=True)[:4] + sorted(consolidated, key=key, reverse=True)[:1]
-        selected.sort(key=key, reverse=True)
+        selected = sorted(separated, key=key, reverse=True)[:5]
         response["hits"]["hits"] = selected
         response["hits"]["total"] = {"value": len(selected), "relation": "eq"}
         return response
