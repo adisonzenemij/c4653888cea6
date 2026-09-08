@@ -42,6 +42,12 @@ class Pm5d0ddf5bModel(UuidModel, Base):
     )
 
 
+class Pm7ea81ec6Model(UuidModel, Base):
+    __tablename__ = "pm_b5eb_65d1aeb635fc"
+    fd_company: Mapped[str] = mapped_column(String(250))
+    fd_document: Mapped[str] = mapped_column(String(250))
+
+
 class Tg5c72c20cModel(UuidModel, Base):
     __tablename__ = "tg_a814_b7308901c01f"
     fd_login: Mapped[str] = mapped_column(String(50), unique=True, index=True)
