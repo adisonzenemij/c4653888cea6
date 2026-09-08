@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.config.database import Base
 
@@ -61,6 +61,7 @@ class Pm0acc84aeModel(UuidModel, Base):
     __tablename__ = "pm_898e_48db3e1fb7b8"
     fd_ask: Mapped[str] = mapped_column(String(500))
     fd_order: Mapped[int] = mapped_column(Integer)
+    fd_required: Mapped[bool] = mapped_column(Boolean, default=False)
     pm_0d3dc00e: Mapped[str] = mapped_column(ForeignKey("pm_a9e4_1879447f9657.id_universal"))
     pm_4d802b91: Mapped[str] = mapped_column(ForeignKey("pm_a98d_4efe1131fd87.id_universal"))
 
