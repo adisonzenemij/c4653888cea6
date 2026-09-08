@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import inspect, select, text
 from app.config.database import Base, SessionLocal, engine
 from app.models.entities_model import *  # Registers all ORM models in Base.metadata.
 
@@ -8,6 +8,13 @@ SEED_DATA = {
         {"id_universal": "aa72f330-f7b3-4cca-a6ff-a73e7cda780a", "fd_service": "http://localhost:4200"},
         {"id_universal": "0480162b-f665-49a7-9962-551b45e4bb82", "fd_service": "http://127.0.0.1:4200"},
         {"id_universal": "13a40bd4-9a77-459a-b914-3a716f816321", "fd_service": "https://d03f3062e3cf.datacompute.org"},
+    ],
+    Sd3a731d00Model: [
+        {"id_universal": "2ac9e780-9142-475e-9926-72501537ada4", "fd_service": "GET"},
+        {"id_universal": "22f2f0d7-3969-4d64-859d-562828752c58", "fd_service": "POST"},
+        {"id_universal": "b7c0f396-dfdd-4e7c-bccd-18c865ccf8c5", "fd_service": "PUT"},
+        {"id_universal": "e4ce5eb5-7ac2-4db9-831e-7839a991c6d3", "fd_service": "PATCH"},
+        {"id_universal": "0e8feba0-bb0d-44c3-93b7-5408fc76dc5e", "fd_service": "DELETE"},
     ],
     Tg5c72c20cModel: [{"id_universal": "001fe2f5-b9aa-4236-bc2e-3f9e1cdbcd72", "fd_login": "root", "fd_passd": "$2y$12$c.RlcM7tlEPEH4DlOgMHYe.GoIWFQH16N199k92zrprLb1OLPnJiy"}],
     Pm8e417bb2Model: [
@@ -26,8 +33,9 @@ def initialize_database() -> None:
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as db:
         for model, rows in SEED_DATA.items():
-            if not db.scalar(select(model.id_universal).limit(1)):
-                db.add_all(model(**row) for row in rows)
+            for row in rows:
+                if not db.get(model, row["id_universal"]):
+                    db.add(model(**row))
         db.commit()
 
 
