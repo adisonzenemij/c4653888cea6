@@ -1,0 +1,1 @@
+from app.repositories.entity_repos import Tg5c72c20cRepository

@@ -36,6 +36,17 @@ Linux: source .venv/bin/activate
 Requerimientos: .venv\Scripts\python -m pip install -r requirements.txt
 ```
 
+## API
+
+La API usa SQLite por defecto (`business.db`). Para MySQL, copie `.env.example` a `.env` y configure `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_PORT` y `DB_NAME`; estas variables tienen prioridad sobre `DATABASE_URL`.
+Al iniciar, crea las tablas y carga los valores iniciales. Los CORS se leen de `sd_a1bb_a6baddf4c35a` durante el arranque.
+
+AutenticaciÃ³n: `POST /api/v1/auth/login` con `{"fd_login":"root","fd_passd":"<contraseÃ±a>"}` devuelve un Bearer JWT. Todas las rutas de recursos exigen ese token.
+
+Cada recurso habilitado ofrece `GET /`, `GET /page?offset=0&limit=25`, `POST /`, `PUT /{id_universal}` y `DELETE /{id_universal}`, conforme a la matriz entregada.
+
+`pm_answer` se publica como `/api/v1/answers` y, segÃºn su matriz, expone creaciÃ³n, actualizaciÃ³n y eliminaciÃ³n.
+
 ## Ejecuciones
 
 ```yml
