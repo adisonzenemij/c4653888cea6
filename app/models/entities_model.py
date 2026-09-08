@@ -19,6 +19,28 @@ class Sd1a9ea48cModel(UuidModel, Base):
     fd_service: Mapped[str] = mapped_column(String(250))
 
 
+class Sd3a731d00Model(UuidModel, Base):
+    __tablename__ = "sd_a9da_8e0684f3f419"
+    fd_service: Mapped[str] = mapped_column(String(250))
+
+
+class Pm0dfa99e2Model(UuidModel, Base):
+    __tablename__ = "pm_a0da_73b502c724d5"
+    fd_name: Mapped[str] = mapped_column(String(250))
+    fd_service: Mapped[str] = mapped_column(String(500))
+
+
+class Pm5d0ddf5bModel(UuidModel, Base):
+    __tablename__ = "pm_8f13_174467919cda"
+    fd_path: Mapped[str] = mapped_column(String(250))
+    sd_3a731d00: Mapped[str] = mapped_column(
+        ForeignKey("sd_a9da_8e0684f3f419.id_universal")
+    )
+    pm_0dfa99e2: Mapped[str] = mapped_column(
+        ForeignKey("pm_a0da_73b502c724d5.id_universal")
+    )
+
+
 class Tg5c72c20cModel(UuidModel, Base):
     __tablename__ = "tg_a814_b7308901c01f"
     fd_login: Mapped[str] = mapped_column(String(50), unique=True, index=True)
