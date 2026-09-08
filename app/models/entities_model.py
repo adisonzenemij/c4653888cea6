@@ -41,7 +41,7 @@ class Pm0d3dc00eModel(UuidModel, Base):
 class Pm4d802b91Model(UuidModel, Base):
     __tablename__ = "pm_a98d_4efe1131fd87"
     fd_count: Mapped[int] = mapped_column(Integer)
-    fd_name: Mapped[str] = mapped_column(String(25))
+    fd_name: Mapped[str] = mapped_column(String(250))
     fd_query: Mapped[int] = mapped_column(Integer)
     fd_since: Mapped[str] = mapped_column(String(25))
     fd_until: Mapped[str] = mapped_column(String(25))
