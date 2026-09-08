@@ -1,5 +1,7 @@
 import uuid
-from sqlalchemy import ForeignKey, Integer, String, Text
+from datetime import datetime
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.config.database import Base
 
@@ -26,6 +28,13 @@ class Tg5c72c20cModel(UuidModel, Base):
 class Pm1a4a8cd7Model(UuidModel, Base):
     __tablename__ = "pm_ac73_a0c3754a0c60"
     fd_random: Mapped[str] = mapped_column(String(50))
+    pm_4d802b91: Mapped[str | None] = mapped_column(
+        ForeignKey("pm_a98d_4efe1131fd87.id_universal"), nullable=True
+    )
+    # Browser-generated key used to make opening a survey idempotent.
+    fd_reservation_key: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    # Only unfinished reservations expire; submitted answers keep their slot.
+    fd_reserved_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
 class Pm8e417bb2Model(UuidModel, Base):
