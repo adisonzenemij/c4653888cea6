@@ -32,6 +32,7 @@ class Pm0dfa99e2Model(UuidModel, Base):
 
 class Pm5d0ddf5bModel(UuidModel, Base):
     __tablename__ = "pm_8f13_174467919cda"
+    fd_name: Mapped[str] = mapped_column(String(250))
     fd_path: Mapped[str] = mapped_column(String(250))
     sd_3a731d00: Mapped[str] = mapped_column(
         ForeignKey("sd_a9da_8e0684f3f419.id_universal")
