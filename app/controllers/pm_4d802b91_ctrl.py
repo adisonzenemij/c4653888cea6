@@ -40,7 +40,9 @@ def public_survey_details(survey_id: str, db: Session = Depends(get_db)):
             .order_by(Pm9a582ff6Model.fd_order)
         )
     ) if question_ids else []
-    type_names = dict(db.execute(select(Pm0d3dc00eModel.id_universal, Pm0d3dc00eModel.fd_format)))
+    type_names = dict(
+        db.execute(select(Pm0d3dc00eModel.id_universal, Pm0d3dc00eModel.fd_format)).all()
+    )
     public_questions = [
         {
             "id_universal": question.id_universal,
