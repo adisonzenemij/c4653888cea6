@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -10,6 +10,11 @@ from app.schemas.pm_4d802b91_schema import CreateSchema, UpdateSchema, ResponseS
 from app.schemas.survey_autofill_schema import AutoFillSchema
 from app.services.survey_autofill_srvc import SurveyAutoFillService
 router = create_crud_router("/surveys", ["Encuestas"], Pm4d802b91Service, CreateSchema, UpdateSchema, ResponseSchema, {"list", "page", "create", "update", "delete"})
+
+
+@router.get("/autofill-capacity", summary="Capacidad de memoria para bots")
+def autofill_capacity(bots: int = Query(1, ge=1, le=10)):
+    return SurveyAutoFillService.memory_capacity(bots)
 
 
 @router.post("/{survey_id}/autofill", summary="Autocompletar encuesta con Chromium")

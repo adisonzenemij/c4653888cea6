@@ -1,4 +1,7 @@
 import asyncio
+import ctypes
+import os
+from pathlib import Path
 import uuid
 
 from fastapi import HTTPException, status
@@ -16,6 +19,73 @@ class SurveyAutoFillService:
 
     def __init__(self, db: Session):
         self.db = db
+
+    @staticmethod
+    def memory_capacity(bots: int) -> dict[str, int]:
+        """Return a conservative per-bot budget from host or cgroup memory."""
+        available = SurveyAutoFillService._available_memory_mb()
+        cgroup_available = SurveyAutoFillService._cgroup_available_memory_mb()
+        if cgroup_available is not None:
+            available = min(available, cgroup_available)
+        # Preserve capacity for FastAPI, MySQL connections and the OS/container.
+        reserved = min(256, max(1, available // 5))
+        usable = max(1, available - reserved)
+        return {
+            "available_mb": available,
+            "reserved_mb": reserved,
+            "max_memory_per_bot_mb": max(1, usable // max(1, bots)),
+        }
+
+    @staticmethod
+    def _available_memory_mb() -> int:
+        meminfo = Path("/proc/meminfo")
+        if meminfo.exists():
+            values = {
+                key.rstrip(":"): int(value.split()[0])
+                for line in meminfo.read_text().splitlines()
+                if (parts := line.split(maxsplit=1)) and len(parts) == 2
+                for key, value in [parts]
+                if value.split()[0].isdigit()
+            }
+            if values.get("MemAvailable"):
+                return max(1, values["MemAvailable"] // 1024)
+        if os.name == "nt":
+            class MemoryStatus(ctypes.Structure):
+                _fields_ = [
+                    ("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                    ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
+                    ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
+                    ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
+                    ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+                ]
+            status_info = MemoryStatus()
+            status_info.dwLength = ctypes.sizeof(MemoryStatus)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status_info)):
+                return max(1, status_info.ullAvailPhys // (1024 * 1024))
+        return 512
+
+    @staticmethod
+    def _cgroup_available_memory_mb() -> int | None:
+        candidates = [
+            (Path("/sys/fs/cgroup/memory.max"), Path("/sys/fs/cgroup/memory.current")),
+            (Path("/sys/fs/cgroup/memory/memory.limit_in_bytes"), Path("/sys/fs/cgroup/memory/memory.usage_in_bytes")),
+        ]
+        for limit_path, usage_path in candidates:
+            if not limit_path.exists() or not usage_path.exists():
+                continue
+            raw_limit = limit_path.read_text().strip()
+            if raw_limit == "max":
+                continue
+            try:
+                limit = int(raw_limit)
+                usage = int(usage_path.read_text().strip())
+            except ValueError:
+                continue
+            # Very large values mean the container has no effective limit.
+            if limit >= 1 << 60:
+                continue
+            return max(1, (limit - usage) // (1024 * 1024))
+        return None
 
     def run(self, survey_id: str, responses: int, bots: int, memory_value: int, memory_unit: str):
         survey = self.db.get(Pm4d802b91Model, survey_id)
@@ -48,10 +118,14 @@ class SurveyAutoFillService:
             )
 
         memory_mb = memory_value * (1024 if memory_unit == "GB" else 1)
-        if memory_mb > 4096:
+        capacity = self.memory_capacity(bots)
+        if memory_mb > capacity["max_memory_per_bot_mb"]:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="La memoria por bot no puede superar 4 GB.",
+                detail=(
+                    "La memoria por bot supera el máximo disponible de "
+                    f"{capacity['max_memory_per_bot_mb']} MB para {bots} bot(s)."
+                ),
             )
         try:
             return asyncio.run(self._run_bots(survey_id, responses, bots, memory_mb))
