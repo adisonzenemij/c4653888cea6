@@ -15,7 +15,17 @@ class BaseService:
     def create(self, values): return self.repository.create(values)
     def update(self, item_id, values): return self.repository.update(self.get(item_id), values)
     def delete(self, item_id):
-        self.repository.delete(self.get(item_id))
+        item = self.get(item_id)
+        modules = self.repository.referencing_modules(item)
+        if modules:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "message": "El registro no puede eliminarse porque está siendo utilizado en otros módulos.",
+                    "modules": modules,
+                },
+            )
+        self.repository.delete(item)
 
     def clear_unused(self):
         return self.repository.clear_unused()
