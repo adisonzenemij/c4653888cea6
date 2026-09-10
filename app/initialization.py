@@ -8,6 +8,7 @@ SEED_DATA = {
         {"id_universal": "aa72f330-f7b3-4cca-a6ff-a73e7cda780a", "fd_service": "http://localhost:4200"},
         {"id_universal": "0480162b-f665-49a7-9962-551b45e4bb82", "fd_service": "http://127.0.0.1:4200"},
         {"id_universal": "13a40bd4-9a77-459a-b914-3a716f816321", "fd_service": "https://d03f3062e3cf.datacompute.org"},
+        {"id_universal": "06456ce1-0fc6-4bce-9fe3-8d649b8e0135", "fd_service": "https://cun-dis38.datacompute.org"},
     ],
     Sd3a731d00Model: [
         {"id_universal": "2ac9e780-9142-475e-9926-72501537ada4", "fd_service": "GET"},
