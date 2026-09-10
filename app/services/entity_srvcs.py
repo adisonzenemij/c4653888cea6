@@ -157,6 +157,23 @@ class Pm1a4a8cd7Service(BaseService):
             )
         self.repository.delete(reservation)
 
+    def resume(self, survey_id: str, reservation_key: str):
+        """Recover an unfinished reservation belonging to the same browser."""
+        now = datetime.now()
+        self._release_expired_reservations(survey_id, now)
+        reservation = self.repository.db.scalar(
+            select(Pm1a4a8cd7Model).where(
+                Pm1a4a8cd7Model.pm_4d802b91 == survey_id,
+                Pm1a4a8cd7Model.fd_reservation_key == reservation_key,
+            )
+        )
+        if not reservation or self._has_answers(self.repository.db, reservation.id_universal):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No hay una reserva pendiente.")
+        reservation.fd_reserved_until = now + timedelta(minutes=30)
+        self.repository.db.commit()
+        self.repository.db.refresh(reservation)
+        return reservation
+
     def renew(self, item_id: str, reservation_key: str):
         reservation = self.get(item_id)
         if reservation.fd_reservation_key != reservation_key:

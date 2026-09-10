@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.controllers.crud_ctrl import create_crud_router
 from app.models.entities_model import Pm0acc84aeModel, Pm0d3dc00eModel, Pm9a582ff6Model
+from app.services.pm_1a4a8cd7_srvc import Pm1a4a8cd7Service
 from app.services.pm_4d802b91_srvc import Pm4d802b91Service
 from app.schemas.pm_4d802b91_schema import CreateSchema, UpdateSchema, ResponseSchema
 from app.schemas.survey_autofill_schema import AutoFillSchema
@@ -33,6 +34,30 @@ public_router = APIRouter(prefix="/public/surveys", tags=["Encuestas públicas"]
 @public_router.get("/available", response_model=list[ResponseSchema])
 def list_public_available_surveys(db: Session = Depends(get_db)):
     return Pm4d802b91Service(db).available()
+
+
+@public_router.get("/resume/{survey_id}")
+def resume_public_survey(survey_id: str, reservation_key: str, db: Session = Depends(get_db)):
+    reservation = Pm1a4a8cd7Service(db).resume(survey_id, reservation_key)
+    survey = Pm4d802b91Service(db).get(survey_id)
+    return {
+        "survey": {
+            "id_universal": survey.id_universal,
+            "fd_count": survey.fd_count,
+            "fd_name": survey.fd_name,
+            "fd_query": survey.fd_query,
+            "fd_since": survey.fd_since,
+            "fd_until": survey.fd_until,
+            "pm_8e417bb2": survey.pm_8e417bb2,
+            "fd_available_slots": Pm4d802b91Service(db).available_slots(survey),
+        },
+        "reservation": {
+            "id_universal": reservation.id_universal,
+            "fd_random": reservation.fd_random,
+            "pm_4d802b91": reservation.pm_4d802b91,
+            "fd_reservation_key": reservation.fd_reservation_key,
+        },
+    }
 
 
 @public_router.get("/{survey_id}/details")
