@@ -51,10 +51,13 @@ Cada recurso habilitado ofrece `GET /`, `GET /page?offset=0&limit=25`, `POST /`,
 ## Ejecuciones
 
 ```yml
-Run: .venv\Scripts\python -m uvicorn main:app --reload
-Run: .venv\Scripts\python -m uvicorn main:app --port 0000 --reload
-Run: .venv\Scripts\python -m uvicorn main:app --host 0.0.0.0 --port 0000 --reload
+Desarrollo con recarga de `app/` y `.env`: .venv\Scripts\python dev.py
+Alternativa: .venv\Scripts\python -m uvicorn main:app --host 0.0.0.0 --port 4159 --reload --reload-dir . --reload-include .env
 ```
+
+Al guardar `.env`, Uvicorn reinicia el proceso y la configuración se vuelve a leer. Esto aplica a la ejecución local de desarrollo. En Docker, las variables del contenedor se definen al crearlo; tras cambiar `.env`, ejecute `docker compose up -d --force-recreate` para aplicarlas.
+
+El host y puerto del servidor de desarrollo se configuran en `.env` con `DEV_HOST` y `DEV_PORT`; por ejemplo, `DEV_HOST=127.0.0.1` y `DEV_PORT=5000`. Si se cambia `DEV_PORT`, reinicie manualmente `dev.py`, pues el proceso supervisor de Uvicorn es quien mantiene el puerto abierto. Si usará autocompletado, actualice también `BOT_API_URL` al mismo puerto local.
 
 ## Comandos de Windows
 
@@ -99,4 +102,3 @@ Arquitectura: docs/arquitectura.md
         <span>Web principal</span>
     </a>
 </div>
-
