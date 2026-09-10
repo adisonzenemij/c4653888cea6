@@ -55,12 +55,12 @@ class Pm1a4a8cd7Service(BaseService):
         reservation_key = values.get("fd_reservation_key")
         if not survey_id:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Debe indicar la encuesta que se va a responder.",
             )
         if not reservation_key:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Debe indicar la clave de reserva de la encuesta.",
             )
 

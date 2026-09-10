@@ -102,7 +102,7 @@ class SurveyAutoFillService:
         available_slots = Pm4d802b91Service(self.db).available_slots(survey)
         if responses > available_slots:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=f"Solo quedan {available_slots} cupos disponibles para esta encuesta.",
             )
 
@@ -128,13 +128,13 @@ class SurveyAutoFillService:
         for question_id, selected_value_ids in allowed_values.items():
             if question_id not in options_by_question:
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                     detail="Una selección configurada no pertenece a esta encuesta.",
                 )
             invalid_value_ids = set(selected_value_ids) - set(options_by_question[question_id])
             if invalid_value_ids:
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                     detail="Una opción configurada no pertenece a la pregunta indicada.",
                 )
 
@@ -142,7 +142,7 @@ class SurveyAutoFillService:
         capacity = self.memory_capacity(bots)
         if memory_mb > capacity["max_memory_per_bot_mb"]:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail=(
                     "La memoria por bot supera el máximo disponible de "
                     f"{capacity['max_memory_per_bot_mb']} MB para {bots} bot(s)."
