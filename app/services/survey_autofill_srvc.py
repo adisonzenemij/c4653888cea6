@@ -87,7 +87,15 @@ class SurveyAutoFillService:
             return max(1, (limit - usage) // (1024 * 1024))
         return None
 
-    def run(self, survey_id: str, responses: int, bots: int, memory_value: int, memory_unit: str):
+    def run(
+        self,
+        survey_id: str,
+        responses: int,
+        bots: int,
+        memory_value: int,
+        memory_unit: str,
+        allowed_values: dict[str, list[str]],
+    ):
         survey = self.db.get(Pm4d802b91Model, survey_id)
         if not survey:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Encuesta no encontrada.")
@@ -117,6 +125,19 @@ class SurveyAutoFillService:
                 detail=f"Las preguntas {', '.join(map(str, missing))} no tienen valores para responder.",
             )
 
+        for question_id, selected_value_ids in allowed_values.items():
+            if question_id not in options_by_question:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Una selección configurada no pertenece a esta encuesta.",
+                )
+            invalid_value_ids = set(selected_value_ids) - set(options_by_question[question_id])
+            if invalid_value_ids:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Una opción configurada no pertenece a la pregunta indicada.",
+                )
+
         memory_mb = memory_value * (1024 if memory_unit == "GB" else 1)
         capacity = self.memory_capacity(bots)
         if memory_mb > capacity["max_memory_per_bot_mb"]:
@@ -128,14 +149,21 @@ class SurveyAutoFillService:
                 ),
             )
         try:
-            return asyncio.run(self._run_bots(survey_id, responses, bots, memory_mb))
+            return asyncio.run(self._run_bots(survey_id, responses, bots, memory_mb, allowed_values))
         except PlaywrightError as error:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=f"Chromium no está disponible en el entorno: {error}",
             ) from error
 
-    async def _run_bots(self, survey_id: str, responses: int, bots: int, memory_mb: int):
+    async def _run_bots(
+        self,
+        survey_id: str,
+        responses: int,
+        bots: int,
+        memory_mb: int,
+        allowed_values: dict[str, list[str]],
+    ):
         queue: asyncio.Queue[int] = asyncio.Queue()
         for number in range(responses):
             queue.put_nowait(number)
@@ -168,7 +196,7 @@ class SurveyAutoFillService:
                         except asyncio.QueueEmpty:
                             break
                         try:
-                            await self._complete_one(page, survey_id)
+                            await self._complete_one(page, survey_id, allowed_values)
                             result["completed"] = int(result["completed"]) + 1
                         except Exception as error:
                             result["failed"] = int(result["failed"]) + 1
@@ -183,7 +211,12 @@ class SurveyAutoFillService:
             await asyncio.gather(*(worker() for _ in range(min(bots, responses))))
         return result
 
-    async def _complete_one(self, page: Page, survey_id: str) -> None:
+    async def _complete_one(
+        self,
+        page: Page,
+        survey_id: str,
+        allowed_values: dict[str, list[str]],
+    ) -> None:
         reservation = await self._request(
             page,
             "/api/public/anonymous",
@@ -199,6 +232,9 @@ class SurveyAutoFillService:
             values_by_question.setdefault(value["pm_0acc84ae"], []).append(value)
         for question in details["questions"]:
             values = values_by_question.get(question["id_universal"], [])
+            selected_value_ids = set(allowed_values.get(question["id_universal"], []))
+            if selected_value_ids:
+                values = [value for value in values if value["id_universal"] in selected_value_ids]
             if not values:
                 raise RuntimeError(f"La pregunta {question['fd_order']} no tiene valores disponibles.")
             value = values[uuid.uuid4().int % len(values)]
