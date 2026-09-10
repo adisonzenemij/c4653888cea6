@@ -1,18 +1,18 @@
-﻿<h1 align="center">ðŸ”¥ Proyecto Backend ðŸ§‘â€ðŸ’»</h1>
+﻿<h1 align="center">🔥 Proyecto Backend 🧑‍💻</h1>
 
-## IntroducciÃ³n
+## Introducciónn
 
 ## Requisitos
 
 - Python 3.13.x
 
-## InstalaciÃ³n
+## Instalaciónn
 
 ```yml
 Clonar repositorio: git clone <project>
 ```
 
-## ConfiguraciÃ³n
+## Configuraciónn
 
 ```yml
 Entorno virtual: python -m venv .venv
@@ -58,7 +58,7 @@ Run: .venv\Scripts\python -m uvicorn main:app --host 0.0.0.0 --port 0000 --reloa
 ## Comandos de Windows
 
 ```yml
-# Permitir scripts solo en la sesiÃ³n actual
+# Permitir scripts solo en la sesiónn actual
 PowerShell: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 ```
 
@@ -73,7 +73,7 @@ Verificar entorno: python -m site
 Requerimientos: .venv\Scripts\python -m pip install -r requirements.txt
 ```
 
-## DocumentaciÃ³n
+## Documentaciónn
 
 ```yml
 ReDoc: http://0.0.0.0:0000/redoc
@@ -91,7 +91,7 @@ Arquitectura: docs/arquitectura.md
 
 `compose.yaml` carga las variables desde `.env` con `env_file`; el archivo no se incluye en la imagen. Si MySQL se ejecuta en el equipo anfitrión, use `DB_HOST=host.docker.internal` en `.env` (en lugar de `127.0.0.1`). Para MySQL en otro contenedor conectado a la red `a690a01e6a6f`, use el nombre del servicio como host (`DB_HOST=mysql80`) y su puerto interno (`DB_PORT=3306`); el puerto publicado `43380` solo se usa desde el host. Puede cambiar el puerto publicado de la API con `API_PORT`, por ejemplo `API_PORT=8080`.
 
-## PÃ¡ginas oficiales
+## Páginas oficiales
 
 <div align="center">
     <a href="https://www.adisonjimenez.net" target="_blank">
