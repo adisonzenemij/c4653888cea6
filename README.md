@@ -86,7 +86,7 @@ Arquitectura: docs/arquitectura.md
 ```yml
 1. Copie `.env.example` como `.env` y configure las variables requeridas.
 2. Comando: docker compose -f compose.yaml up -d --build
-3. API: http://localhost:8000/docs
+3. API: http://localhost:40159/docs
 ```
 
 `compose.yaml` carga las variables desde `.env` con `env_file`; el archivo no se incluye en la imagen. Si MySQL se ejecuta en el equipo anfitrión, use `DB_HOST=host.docker.internal` en `.env` (en lugar de `127.0.0.1`). Puede cambiar el puerto publicado con `API_PORT`, por ejemplo `API_PORT=8080`.

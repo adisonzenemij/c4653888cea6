@@ -17,7 +17,7 @@ services:
     environment:
       TZ: ${TZ:-America/Bogota}
     ports:
-      - "${API_PORT:-8000}:8000"
+      - "${API_PORT:-40159}:4159"
     # Permite usar DB_HOST=host.docker.internal si MySQL se ejecuta en el host.
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -27,7 +27,7 @@ services:
         - CMD
         - python
         - -c
-        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/health', timeout=5)"
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:4159/health', timeout=5)"
       interval: 30s
       timeout: 10s
       retries: 3
