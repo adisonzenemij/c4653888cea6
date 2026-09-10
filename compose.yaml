@@ -10,7 +10,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: cun-business-api:latest
-    container_name: cun-business-api
+    container_name: c4653888cea6
     env_file:
       - path: .env
         required: true
