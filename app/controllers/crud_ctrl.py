@@ -39,6 +39,16 @@ def create_crud_router(
         router.add_api_route("/{item_id}", update_item, methods=["PUT"], response_model=response_schema)
 
     if "delete" in operations:
+        def clear_items(db: Session = Depends(get_db)):
+            return service_factory(db).clear_unused()
+        router.add_api_route(
+            "/clear",
+            clear_items,
+            methods=["DELETE"],
+            response_model=dict,
+            summary="Vaciar registros no relacionados",
+        )
+
         def delete_item(item_id: str, db: Session = Depends(get_db)):
             service_factory(db).delete(item_id)
             return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -16,3 +16,6 @@ class BaseService:
     def update(self, item_id, values): return self.repository.update(self.get(item_id), values)
     def delete(self, item_id):
         self.repository.delete(self.get(item_id))
+
+    def clear_unused(self):
+        return self.repository.clear_unused()

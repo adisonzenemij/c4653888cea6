@@ -39,3 +39,36 @@ class BaseRepository(Generic[ModelT]):
     def delete(self, item: ModelT) -> None:
         self.db.delete(item)
         self.db.commit()
+
+    def clear_unused(self) -> dict[str, int]:
+        """Remove rows only when no other mapped table references them."""
+        target_table = self.model.__table__
+        inbound_keys = [
+            foreign_key
+            for table in target_table.metadata.tables.values()
+            for foreign_key in table.foreign_keys
+            if foreign_key.column.table is target_table
+        ]
+        deleted = 0
+        preserved = 0
+
+        for item in self.list():
+            is_referenced = any(
+                self.db.scalar(
+                    select(func.count())
+                    .select_from(foreign_key.parent.table)
+                    .where(
+                        foreign_key.parent
+                        == getattr(item, foreign_key.column.key)
+                    )
+                )
+                for foreign_key in inbound_keys
+            )
+            if is_referenced:
+                preserved += 1
+                continue
+            self.db.delete(item)
+            deleted += 1
+
+        self.db.commit()
+        return {"deleted": deleted, "preserved": preserved}
