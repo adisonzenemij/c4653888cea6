@@ -5,7 +5,7 @@ networks:
     name: d894d5b91ae1
 
 services:
-  api:
+  c4653888cea6:
     build:
       context: .
       dockerfile: Dockerfile
