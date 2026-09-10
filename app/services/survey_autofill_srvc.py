@@ -217,37 +217,51 @@ class SurveyAutoFillService:
         survey_id: str,
         allowed_values: dict[str, list[str]],
     ) -> None:
-        reservation = await self._request(
-            page,
-            "/api/public/anonymous",
-            "POST",
-            {
-                "pm_4d802b91": survey_id,
-                "fd_reservation_key": f"autofill-{uuid.uuid4()}",
-            },
-        )
-        details = await self._request(page, f"/api/public/surveys/{survey_id}/details", "GET")
-        values_by_question: dict[str, list[dict]] = {}
-        for value in details["values"]:
-            values_by_question.setdefault(value["pm_0acc84ae"], []).append(value)
-        for question in details["questions"]:
-            values = values_by_question.get(question["id_universal"], [])
-            selected_value_ids = set(allowed_values.get(question["id_universal"], []))
-            if selected_value_ids:
-                values = [value for value in values if value["id_universal"] in selected_value_ids]
-            if not values:
-                raise RuntimeError(f"La pregunta {question['fd_order']} no tiene valores disponibles.")
-            value = values[uuid.uuid4().int % len(values)]
-            await self._request(
+        reservation_key = f"autofill-{uuid.uuid4()}"
+        reservation: dict | None = None
+        try:
+            reservation = await self._request(
                 page,
-                "/api/public/answers",
+                "/api/public/anonymous",
                 "POST",
-                {
-                    "fd_repply": value["fd_option"],
-                    "pm_9a582ff6": value["id_universal"],
-                    "pm_1a4a8cd7": reservation["id_universal"],
-                },
+                {"pm_4d802b91": survey_id, "fd_reservation_key": reservation_key},
             )
+            details = await self._request(page, f"/api/public/surveys/{survey_id}/details", "GET")
+            values_by_question: dict[str, list[dict]] = {}
+            for value in details["values"]:
+                values_by_question.setdefault(value["pm_0acc84ae"], []).append(value)
+            for question in details["questions"]:
+                values = values_by_question.get(question["id_universal"], [])
+                selected_value_ids = set(allowed_values.get(question["id_universal"], []))
+                if selected_value_ids:
+                    values = [value for value in values if value["id_universal"] in selected_value_ids]
+                if not values:
+                    raise RuntimeError(f"La pregunta {question['fd_order']} no tiene valores disponibles.")
+                value = values[uuid.uuid4().int % len(values)]
+                await self._request(
+                    page,
+                    "/api/public/answers",
+                    "POST",
+                    {
+                        "fd_repply": value["fd_option"],
+                        "pm_9a582ff6": value["id_universal"],
+                        "pm_1a4a8cd7": reservation["id_universal"],
+                    },
+                )
+        except Exception:
+            # A failed bot must not reserve a slot for the next 30 minutes.
+            # The endpoint only removes reservations that still have no answers.
+            if reservation:
+                try:
+                    await self._request(
+                        page,
+                        f"/api/public/anonymous/{reservation['id_universal']}/release",
+                        "POST",
+                        {"fd_reservation_key": reservation_key},
+                    )
+                except Exception:
+                    pass
+            raise
 
     async def _request(self, page: Page, path: str, method: str, body: dict | None = None):
         return await page.evaluate(
