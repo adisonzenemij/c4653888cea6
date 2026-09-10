@@ -177,6 +177,25 @@ class Pm0d3dc00eService(BaseService):
 class Pm4d802b91Service(BaseService):
     def __init__(self, db): super().__init__(Pm4d802b91Repository(db), "Encuesta")
 
+    def available_slots(self, survey: Pm4d802b91Model, now: datetime | None = None) -> int:
+        now = now or datetime.now()
+        participations = list(
+            self.repository.db.scalars(
+                select(Pm1a4a8cd7Model).where(
+                    Pm1a4a8cd7Model.pm_4d802b91 == survey.id_universal
+                )
+            )
+        )
+        used_slots = sum(
+            participation.fd_reserved_until is None
+            or participation.fd_reserved_until >= now
+            or Pm1a4a8cd7Service._has_answers(
+                self.repository.db, participation.id_universal
+            )
+            for participation in participations
+        )
+        return max(0, survey.fd_count - used_slots)
+
     def available(self):
         """Returns surveys that can still receive a new anonymous response."""
         today = date.today()
@@ -191,23 +210,18 @@ class Pm4d802b91Service(BaseService):
             if not opening <= today <= closing:
                 continue
 
-            participations = list(
-                self.repository.db.scalars(
-                    select(Pm1a4a8cd7Model).where(
-                        Pm1a4a8cd7Model.pm_4d802b91 == survey.id_universal
-                    )
-                )
-            )
-            used_slots = sum(
-                participation.fd_reserved_until is None
-                or participation.fd_reserved_until >= now
-                or Pm1a4a8cd7Service._has_answers(
-                    self.repository.db, participation.id_universal
-                )
-                for participation in participations
-            )
-            if used_slots < survey.fd_count:
-                available_surveys.append(survey)
+            available_slots = self.available_slots(survey, now)
+            if available_slots:
+                available_surveys.append({
+                    "id_universal": survey.id_universal,
+                    "fd_count": survey.fd_count,
+                    "fd_name": survey.fd_name,
+                    "fd_query": survey.fd_query,
+                    "fd_since": survey.fd_since,
+                    "fd_until": survey.fd_until,
+                    "pm_8e417bb2": survey.pm_8e417bb2,
+                    "fd_available_slots": available_slots,
+                })
         return available_surveys
 class Pm0acc84aeService(BaseService):
     def __init__(self, db): super().__init__(Pm0acc84aeRepository(db), "Pregunta")

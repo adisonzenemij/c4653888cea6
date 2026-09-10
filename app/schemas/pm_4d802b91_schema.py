@@ -8,4 +8,5 @@ class UpdateSchema(BaseModel):
     fd_count: int | None = None; fd_name: str | None = Field(default=None, max_length=250); fd_query: int | None = None
     fd_since: str | None = Field(default=None, max_length=25); fd_until: str | None = Field(default=None, max_length=25)
     pm_8e417bb2: str | None = Field(default=None, min_length=36, max_length=36)
-class ResponseSchema(CreateSchema, OutputSchema): pass
+class ResponseSchema(CreateSchema, OutputSchema):
+    fd_available_slots: int | None = None

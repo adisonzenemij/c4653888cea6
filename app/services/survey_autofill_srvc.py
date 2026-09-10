@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.config.settings import settings
 from app.models.entities_model import Pm0acc84aeModel, Pm4d802b91Model, Pm9a582ff6Model
+from app.services.entity_srvcs import Pm4d802b91Service
 
 
 class SurveyAutoFillService:
@@ -20,10 +21,11 @@ class SurveyAutoFillService:
         survey = self.db.get(Pm4d802b91Model, survey_id)
         if not survey:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Encuesta no encontrada.")
-        if responses > survey.fd_count:
+        available_slots = Pm4d802b91Service(self.db).available_slots(survey)
+        if responses > available_slots:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"La encuesta permite como máximo {survey.fd_count} respuestas.",
+                detail=f"Solo quedan {available_slots} cupos disponibles para esta encuesta.",
             )
 
         questions = list(self.db.scalars(

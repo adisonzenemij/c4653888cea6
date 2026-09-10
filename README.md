@@ -34,6 +34,7 @@ Linux: source .venv/bin/activate
 
 ```yml
 Requerimientos: .venv\Scripts\python -m pip install -r requirements.txt
+Chronium: python -m playwright install --with-deps chromium
 ```
 
 ## API
