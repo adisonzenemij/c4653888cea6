@@ -3,6 +3,9 @@ name: d894d5b91ae1
 networks:
   default:
     name: d894d5b91ae1
+  mysql_network:
+    external: true
+    name: a690a01e6a6f
 
 services:
   c4653888cea6:
@@ -21,6 +24,8 @@ services:
     # Permite usar DB_HOST=host.docker.internal si MySQL se ejecuta en el host.
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - mysql_network
     restart: unless-stopped
     healthcheck:
       test:

@@ -89,7 +89,7 @@ Arquitectura: docs/arquitectura.md
 3. API: http://localhost:40159/docs
 ```
 
-`compose.yaml` carga las variables desde `.env` con `env_file`; el archivo no se incluye en la imagen. Si MySQL se ejecuta en el equipo anfitrión, use `DB_HOST=host.docker.internal` en `.env` (en lugar de `127.0.0.1`). Puede cambiar el puerto publicado con `API_PORT`, por ejemplo `API_PORT=8080`.
+`compose.yaml` carga las variables desde `.env` con `env_file`; el archivo no se incluye en la imagen. Si MySQL se ejecuta en el equipo anfitrión, use `DB_HOST=host.docker.internal` en `.env` (en lugar de `127.0.0.1`). Para MySQL en otro contenedor conectado a la red `a690a01e6a6f`, use el nombre del servicio como host (`DB_HOST=mysql80`) y su puerto interno (`DB_PORT=3306`); el puerto publicado `43380` solo se usa desde el host. Puede cambiar el puerto publicado de la API con `API_PORT`, por ejemplo `API_PORT=8080`.
 
 ## PÃ¡ginas oficiales
 
