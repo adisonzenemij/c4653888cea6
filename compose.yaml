@@ -19,6 +19,7 @@ services:
         required: true
     environment:
       TZ: ${TZ:-America/Bogota}
+      BOT_API_URL: ${BOT_API_URL:-http://127.0.0.1:4159}
     ports:
       - "${API_PORT:-40159}:4159"
     # Permite usar DB_HOST=host.docker.internal si MySQL se ejecuta en el host.

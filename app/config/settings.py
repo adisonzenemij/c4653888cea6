@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     jwt_secret_key: str = Field(min_length=32)
     jwt_algorithm: str
     jwt_access_token_minutes: int
+    bot_api_url: str = "http://127.0.0.1:4159"
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property

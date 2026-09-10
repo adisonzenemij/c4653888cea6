@@ -7,7 +7,14 @@ from app.controllers.crud_ctrl import create_crud_router
 from app.models.entities_model import Pm0acc84aeModel, Pm0d3dc00eModel, Pm9a582ff6Model
 from app.services.pm_4d802b91_srvc import Pm4d802b91Service
 from app.schemas.pm_4d802b91_schema import CreateSchema, UpdateSchema, ResponseSchema
+from app.schemas.survey_autofill_schema import AutoFillSchema
+from app.services.survey_autofill_srvc import SurveyAutoFillService
 router = create_crud_router("/surveys", ["Encuestas"], Pm4d802b91Service, CreateSchema, UpdateSchema, ResponseSchema, {"list", "page", "create", "update", "delete"})
+
+
+@router.post("/{survey_id}/autofill", summary="Autocompletar encuesta con Chromium")
+def autofill_survey(survey_id: str, payload: AutoFillSchema, db: Session = Depends(get_db)):
+    return SurveyAutoFillService(db).run(survey_id, **payload.model_dump())
 
 
 @router.get("/available", response_model=list[ResponseSchema], summary="Encuestas disponibles")
