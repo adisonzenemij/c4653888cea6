@@ -1,0 +1,34 @@
+name: engineering
+
+networks:
+  default:
+    name: engineering
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cun-business-api:latest
+    container_name: cun-business-api
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      TZ: ${TZ:-America/Bogota}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    # Permite usar DB_HOST=host.docker.internal si MySQL se ejecuta en el host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
