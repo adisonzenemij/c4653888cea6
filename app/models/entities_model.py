@@ -98,6 +98,13 @@ class Tg8a26b478Model(UuidModel, Base):
     tg_9a7bbe6f: Mapped[str] = mapped_column(ForeignKey("tg_a287_2014b0b97d7c.id_universal"))
 
 
+class Tg8a2579bfModel(UuidModel, Base):
+    __tablename__ = "tg_ae63_c36dac5c6c1e"
+    ms_8b6bd18a: Mapped[str] = mapped_column(ForeignKey("ms_a48c_ec307e2e32e7.id_universal"))
+    tg_2f997592: Mapped[str] = mapped_column(ForeignKey("tg_9bdf_bc847ab6e817.id_universal"))
+    tg_9a7bbe6f: Mapped[str] = mapped_column(ForeignKey("tg_a287_2014b0b97d7c.id_universal"))
+
+
 class Pm1a4a8cd7Model(UuidModel, Base):
     __tablename__ = "pm_ac73_a0c3754a0c60"
     fd_random: Mapped[str] = mapped_column(String(50))

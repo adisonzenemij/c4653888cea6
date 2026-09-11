@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.initialization import cors_origins, initialize_database
 
@@ -18,6 +19,7 @@ openapi_tags = [
     {"name": "Valores"},
     {"name": "JWT Permisos"}, {"name": "Entidades Módulos"}, {"name": "Entidades Recursos"},
     {"name": "Roles Datos"}, {"name": "Roles Accesos"}, {"name": "Roles Permisos"},
+    {"name": "Roles Módulos"},
 ]
 
 app = FastAPI(title="CUN Business API", version="1.0.0", openapi_tags=openapi_tags)
@@ -39,12 +41,14 @@ from app.controllers.pm_0acc84ae_ctrl import router as question_router
 from app.controllers.pm_9a582ff6_ctrl import router as value_router
 from app.controllers.pm_3d86d159_ctrl import router as answer_router
 from app.controllers.metadata_ctrl import jwt_router, module_router, resource_router as metadata_resource_router, role_data_router, role_access_router, role_permit_router
+from app.controllers.tg_8a2579bf_ctrl import router as role_module_router
 
 for router in (
     cors_router, method_router, service_router, resource_router, society_router, user_router,
     anonymous_router, scope_router, type_router, survey_router, question_router,
     value_router, answer_router,
     jwt_router, module_router, metadata_resource_router, role_data_router, role_access_router, role_permit_router,
+    role_module_router,
 ):
     app.include_router(router, prefix="/api")
 app.include_router(public_survey_router, prefix="/api")
@@ -54,3 +58,8 @@ app.include_router(public_participation_router, prefix="/api")
 @app.get("/health", tags=["Health"])
 def health():
     return {"status": "ok"}
+
+
+@app.get("/robots.txt", include_in_schema=False, response_class=PlainTextResponse)
+def robots():
+    return "User-agent: *\nDisallow: /api/\nDisallow: /working/\nDisallow: /portal/\n"

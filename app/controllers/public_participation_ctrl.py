@@ -8,7 +8,7 @@ from app.services.pm_1a4a8cd7_srvc import Pm1a4a8cd7Service
 from app.services.pm_3d86d159_srvc import Pm3d86d159Service
 
 
-router = APIRouter(prefix="/public", tags=["Participación pública"])
+router = APIRouter(prefix="/public", tags=["Participación Pública"])
 
 
 @router.post("/anonymous", response_model=AnonymousResponseSchema, status_code=status.HTTP_201_CREATED)

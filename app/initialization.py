@@ -11,6 +11,7 @@ SEED_FILES = (
     "ms_8b6bd18a.sql",
     "ms_2e794a8f.sql",
     "tg_9a7bbe6f.sql",
+    "tg_8a2579bf.sql",
     "tg_2f997592.sql",
     "sd_1a9ea48c.sql",
     "sd_3a731d00.sql",
