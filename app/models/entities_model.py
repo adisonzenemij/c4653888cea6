@@ -52,6 +52,50 @@ class Tg5c72c20cModel(UuidModel, Base):
     __tablename__ = "tg_a814_b7308901c01f"
     fd_login: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     fd_passd: Mapped[str] = mapped_column(String(250))
+    tg_9a7bbe6f: Mapped[str | None] = mapped_column(
+        ForeignKey("tg_a287_2014b0b97d7c.id_universal"), nullable=True
+    )
+
+
+class Sd6bb63bb4Model(UuidModel, Base):
+    __tablename__ = "sd_94ef_9028633022a5"
+    fd_name: Mapped[str] = mapped_column(String(50))
+
+
+class Ms8b6bd18aModel(UuidModel, Base):
+    __tablename__ = "ms_a48c_ec307e2e32e7"
+    fd_client: Mapped[str] = mapped_column(String(8))
+    fd_prefix: Mapped[str] = mapped_column(String(250))
+    fd_product: Mapped[str] = mapped_column(String(250))
+
+
+class Ms2e794a8fModel(UuidModel, Base):
+    __tablename__ = "ms_abc1_905dfec2b33f"
+    fd_client: Mapped[str] = mapped_column(String(8))
+    fd_entity: Mapped[str] = mapped_column(String(250))
+    fd_name: Mapped[str] = mapped_column(String(250))
+    sd_select: Mapped[str] = mapped_column(ForeignKey("sd_94ef_9028633022a5.id_universal"))
+    sd_insert: Mapped[str] = mapped_column(ForeignKey("sd_94ef_9028633022a5.id_universal"))
+    sd_update: Mapped[str] = mapped_column(ForeignKey("sd_94ef_9028633022a5.id_universal"))
+    sd_delete: Mapped[str] = mapped_column(ForeignKey("sd_94ef_9028633022a5.id_universal"))
+    ms_8b6bd18a: Mapped[str] = mapped_column(ForeignKey("ms_a48c_ec307e2e32e7.id_universal"))
+
+
+class Tg9a7bbe6fModel(UuidModel, Base):
+    __tablename__ = "tg_a287_2014b0b97d7c"
+    fd_name: Mapped[str] = mapped_column(String(50), unique=True)
+
+
+class Tg2f997592Model(UuidModel, Base):
+    __tablename__ = "tg_9bdf_bc847ab6e817"
+    fd_name: Mapped[str] = mapped_column(String(50), unique=True)
+
+
+class Tg8a26b478Model(UuidModel, Base):
+    __tablename__ = "tg_ba8d_970b4d64d880"
+    ms_2e794a8f: Mapped[str] = mapped_column(ForeignKey("ms_abc1_905dfec2b33f.id_universal"))
+    tg_2f997592: Mapped[str] = mapped_column(ForeignKey("tg_9bdf_bc847ab6e817.id_universal"))
+    tg_9a7bbe6f: Mapped[str] = mapped_column(ForeignKey("tg_a287_2014b0b97d7c.id_universal"))
 
 
 class Pm1a4a8cd7Model(UuidModel, Base):
