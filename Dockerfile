@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir --upgrade pip \
     && python -m playwright install --with-deps chromium
 
 COPY app ./app
+COPY sql ./sql
 COPY main.py ./
 
 EXPOSE 4159
