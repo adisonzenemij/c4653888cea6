@@ -28,7 +28,7 @@ def current_user_permissions(current_user: str = Depends(get_current_user), db: 
         return {"role": None, "permissions": []}
     role = db.get(Tg9a7bbe6fModel, user.tg_9a7bbe6f)
     rows = db.execute(
-        select(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name, Tg2f997592Model.fd_name)
+        select(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name, Tg2f997592Model.fd_name, Ms2e794a8fModel.fd_client)
         .join(Tg8a26b478Model, Tg8a26b478Model.ms_2e794a8f == Ms2e794a8fModel.id_universal)
         .join(Tg2f997592Model, Tg2f997592Model.id_universal == Tg8a26b478Model.tg_2f997592)
         .join(Ms8b6bd18aModel, Ms8b6bd18aModel.id_universal == Ms2e794a8fModel.ms_8b6bd18a)
@@ -36,8 +36,8 @@ def current_user_permissions(current_user: str = Depends(get_current_user), db: 
         .order_by(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name)
     ).all()
     return {"role": role.fd_name if role else None, "permissions": [
-        {"module": module, "resource": resource, "access": access}
-        for module, resource, access in rows
+        {"module": module, "resource": resource, "access": access, "client": client}
+        for module, resource, access, client in rows
     ]}
 
 router.include_router(create_crud_router("/users", ["Usuarios"], Tg5c72c20cService, CreateSchema, UpdateSchema, ResponseSchema))
