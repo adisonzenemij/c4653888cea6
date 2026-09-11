@@ -28,12 +28,21 @@ class BaseRepository(Generic[ModelT]):
         self.db, self.model = db, model
 
     def list(self) -> list[ModelT]:
-        return list(self.db.scalars(select(self.model)))
+        return self._with_associated(list(self.db.scalars(select(self.model))))
 
     def page(self, offset: int = 0, limit: int = 25) -> tuple[list[ModelT], int]:
         items = list(self.db.scalars(select(self.model).offset(offset).limit(limit)))
         total = self.db.scalar(select(func.count()).select_from(self.model)) or 0
-        return items, total
+        return self._with_associated(items), total
+
+    def _with_associated(self, items: list[ModelT]) -> list[ModelT]:
+        """Attach the inbound-relation count used by the generic CRUD tables."""
+        for item in items:
+            item.fd_associated = sum(
+                int(reference["records"])
+                for reference in self.referencing_modules(item)
+            )
+        return items
 
     def get(self, item_id: str) -> ModelT | None:
         return self.db.get(self.model, item_id)
