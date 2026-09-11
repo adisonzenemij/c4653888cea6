@@ -5,7 +5,7 @@ from datetime import date, datetime, time, timedelta
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 
-from app.models.entities_model import Pm1a4a8cd7Model, Pm3d86d159Model, Pm4d802b91Model
+from app.models.entities_model import Pm1a4a8cd7Model, Pm3d86d159Model, Pm4d802b91Model, Ms2e794a8fModel, Tg2f997592Model, Tg8a26b478Model, Tg9a7bbe6fModel
 from app.services.base_srvc import BaseService
 from app.security.security import pwd_context
 from app.repositories.entity_repos import *
@@ -21,6 +21,34 @@ class Tg5c72c20cService(BaseService):
     def update(self, item_id, values):
         if "fd_passd" in values: values["fd_passd"] = pwd_context.hash(values["fd_passd"])
         return super().update(item_id, values)
+
+
+class Tg9a7bbe6fService(BaseService):
+    """A role starts denied for every resource until an administrator grants it."""
+    def __init__(self, db):
+        super().__init__(BaseRepository(db, Tg9a7bbe6fModel), "Rol de datos")
+
+    def create(self, values):
+        db = self.repository.db
+        role = Tg9a7bbe6fModel(**values)
+        db.add(role)
+        try:
+            db.flush()
+            denied = db.scalar(select(Tg2f997592Model).where(Tg2f997592Model.fd_name == "Denegado"))
+            if not denied:
+                raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="No existe el acceso Denegado.")
+            for resource in db.scalars(select(Ms2e794a8fModel)):
+                db.add(Tg8a26b478Model(
+                    ms_2e794a8f=resource.id_universal,
+                    tg_2f997592=denied.id_universal,
+                    tg_9a7bbe6f=role.id_universal,
+                ))
+            db.commit()
+            db.refresh(role)
+            return role
+        except Exception:
+            db.rollback()
+            raise
 class Pm1a4a8cd7Service(BaseService):
     def __init__(self, db): super().__init__(Pm1a4a8cd7Repository(db), "Anónimo")
 

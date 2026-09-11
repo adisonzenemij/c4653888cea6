@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from app.controllers.crud_ctrl import create_crud_router
 from app.repositories.base_repo import BaseRepository
 from app.services.base_srvc import BaseService
+from app.services.entity_srvcs import Tg9a7bbe6fService
 from app.models.entities_model import Sd6bb63bb4Model, Ms8b6bd18aModel, Ms2e794a8fModel, Tg9a7bbe6fModel, Tg2f997592Model, Tg8a26b478Model
 from app.schemas.base_schema import OutputSchema
 
@@ -28,6 +29,6 @@ class PermitResponse(PermitCreate, OutputSchema): pass
 jwt_router = create_crud_router('/jwt-permits', ['JWT Permisos'], service_for(Sd6bb63bb4Model, 'Permiso JWT'), NameCreate, NameUpdate, NameResponse)
 module_router = create_crud_router('/table-modules', ['Entidades Módulos'], service_for(Ms8b6bd18aModel, 'Módulo'), ModuleCreate, ModuleUpdate, ModuleResponse)
 resource_router = create_crud_router('/table-resources', ['Entidades Recursos'], service_for(Ms2e794a8fModel, 'Recurso de tabla'), ResourceCreate, ResourceUpdate, ResourceResponse)
-role_data_router = create_crud_router('/role-data', ['Roles Datos'], service_for(Tg9a7bbe6fModel, 'Rol de datos'), NameCreate, NameUpdate, NameResponse)
+role_data_router = create_crud_router('/role-data', ['Roles Datos'], Tg9a7bbe6fService, NameCreate, NameUpdate, NameResponse)
 role_access_router = create_crud_router('/role-access', ['Roles Accesos'], service_for(Tg2f997592Model, 'Rol de acceso'), NameCreate, NameUpdate, NameResponse)
 role_permit_router = create_crud_router('/role-permits', ['Roles Permisos'], service_for(Tg8a26b478Model, 'Permiso por rol'), PermitCreate, PermitUpdate, PermitResponse)
