@@ -8,7 +8,7 @@ from app.services.pm_7ea81ec6_srvc import Pm7ea81ec6Service
 
 
 router = create_crud_router(
-    "/societies", ["Sociedades"], Pm7ea81ec6Service, CreateSchema, UpdateSchema, ResponseSchema
+    "/companies", ["Empresas"], Pm7ea81ec6Service, CreateSchema, UpdateSchema, ResponseSchema
 )
 
 
