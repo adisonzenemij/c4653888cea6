@@ -22,8 +22,8 @@ class ResourceCreate(BaseModel):
 class ResourceUpdate(BaseModel):
     fd_client: str | None = None; fd_entity: str | None = None; fd_name: str | None = None; sd_select: str | None = None; sd_insert: str | None = None; sd_update: str | None = None; sd_delete: str | None = None; ms_8b6bd18a: str | None = None
 class ResourceResponse(ResourceCreate, OutputSchema): pass
-class PermitCreate(BaseModel): ms_2e794a8f: str; tg_2f997592: str; tg_9a7bbe6f: str
-class PermitUpdate(BaseModel): ms_2e794a8f: str | None = None; tg_2f997592: str | None = None; tg_9a7bbe6f: str | None = None
+class PermitCreate(BaseModel): sd_insert: str; sd_update: str; sd_delete: str; ms_2e794a8f: str; tg_2f997592: str; tg_9a7bbe6f: str
+class PermitUpdate(BaseModel): sd_insert: str | None = None; sd_update: str | None = None; sd_delete: str | None = None; ms_2e794a8f: str | None = None; tg_2f997592: str | None = None; tg_9a7bbe6f: str | None = None
 class PermitResponse(PermitCreate, OutputSchema): pass
 
 jwt_router = create_crud_router('/jwt-permits', ['JWT Permisos'], service_for(Sd6bb63bb4Model, 'Permiso JWT'), NameCreate, NameUpdate, NameResponse)

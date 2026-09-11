@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from app.config.database import get_db
 from app.controllers.crud_ctrl import create_crud_router
 from app.repositories.tg_5c72c20c_repo import Tg5c72c20cRepository
@@ -27,10 +27,16 @@ def current_user_permissions(current_user: str = Depends(get_current_user), db: 
     if not user or not user.tg_9a7bbe6f:
         return {"role": None, "permissions": [], "module_permissions": []}
     role = db.get(Tg9a7bbe6fModel, user.tg_9a7bbe6f)
+    insert_access = aliased(Tg2f997592Model)
+    update_access = aliased(Tg2f997592Model)
+    delete_access = aliased(Tg2f997592Model)
     rows = db.execute(
-        select(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name, Tg2f997592Model.fd_name, Ms2e794a8fModel.fd_client)
+        select(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name, Tg2f997592Model.fd_name, Ms2e794a8fModel.fd_client, insert_access.fd_name, update_access.fd_name, delete_access.fd_name)
         .join(Tg8a26b478Model, Tg8a26b478Model.ms_2e794a8f == Ms2e794a8fModel.id_universal)
         .join(Tg2f997592Model, Tg2f997592Model.id_universal == Tg8a26b478Model.tg_2f997592)
+        .join(insert_access, insert_access.id_universal == Tg8a26b478Model.sd_insert)
+        .join(update_access, update_access.id_universal == Tg8a26b478Model.sd_update)
+        .join(delete_access, delete_access.id_universal == Tg8a26b478Model.sd_delete)
         .join(Ms8b6bd18aModel, Ms8b6bd18aModel.id_universal == Ms2e794a8fModel.ms_8b6bd18a)
         .where(Tg8a26b478Model.tg_9a7bbe6f == user.tg_9a7bbe6f)
         .order_by(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name)
@@ -43,8 +49,8 @@ def current_user_permissions(current_user: str = Depends(get_current_user), db: 
         .order_by(Ms8b6bd18aModel.fd_product)
     ).all()
     return {"role": role.fd_name if role else None, "permissions": [
-        {"module": module, "resource": resource, "access": access, "client": client}
-        for module, resource, access, client in rows
+        {"module": module, "resource": resource, "access": access, "client": client, "insert": insert, "update": update, "delete": delete}
+        for module, resource, access, client, insert, update, delete in rows
     ], "module_permissions": [
         {"module_id": module_id, "module": module, "access": access}
         for module_id, module, access in module_rows

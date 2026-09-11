@@ -93,6 +93,9 @@ class Tg2f997592Model(UuidModel, Base):
 
 class Tg8a26b478Model(UuidModel, Base):
     __tablename__ = "tg_ba8d_970b4d64d880"
+    sd_insert: Mapped[str] = mapped_column(ForeignKey("tg_9bdf_bc847ab6e817.id_universal"), server_default="38e6a548-94f3-4186-8cfb-ec16eedc7263")
+    sd_update: Mapped[str] = mapped_column(ForeignKey("tg_9bdf_bc847ab6e817.id_universal"), server_default="38e6a548-94f3-4186-8cfb-ec16eedc7263")
+    sd_delete: Mapped[str] = mapped_column(ForeignKey("tg_9bdf_bc847ab6e817.id_universal"), server_default="38e6a548-94f3-4186-8cfb-ec16eedc7263")
     ms_2e794a8f: Mapped[str] = mapped_column(ForeignKey("ms_abc1_905dfec2b33f.id_universal"))
     tg_2f997592: Mapped[str] = mapped_column(ForeignKey("tg_9bdf_bc847ab6e817.id_universal"))
     tg_9a7bbe6f: Mapped[str] = mapped_column(ForeignKey("tg_a287_2014b0b97d7c.id_universal"))

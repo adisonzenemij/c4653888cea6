@@ -40,6 +40,9 @@ class Tg9a7bbe6fService(BaseService):
             for resource in db.scalars(select(Ms2e794a8fModel)):
                 db.add(Tg8a26b478Model(
                     ms_2e794a8f=resource.id_universal,
+                    sd_insert=denied.id_universal,
+                    sd_update=denied.id_universal,
+                    sd_delete=denied.id_universal,
                     tg_2f997592=denied.id_universal,
                     tg_9a7bbe6f=role.id_universal,
                 ))

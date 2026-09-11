@@ -19,3 +19,9 @@ INSERT INTO tg_ba8d_970b4d64d880 (id_universal, ms_2e794a8f, tg_2f997592, tg_9a7
 ('3fb4da66-f066-443f-b6ca-3444e223f28a','0acc84ae-a915-4703-898e-48db3e1fb7b8','38e6a548-94f3-4186-8cfb-ec16eedc7263','2c17d08d-0840-4e12-b626-350a763635f2'),
 ('45f015b3-5771-453c-8b1a-18980118f2e1','9a582ff6-e622-467f-96ee-18d1272728c6','38e6a548-94f3-4186-8cfb-ec16eedc7263','2c17d08d-0840-4e12-b626-350a763635f2'),
 ('ea55ac9b-a4d2-423d-98d2-f3b7a86f53d5','3d86d159-8fdf-4d28-9482-b7b3bf232a17','38e6a548-94f3-4186-8cfb-ec16eedc7263','2c17d08d-0840-4e12-b626-350a763635f2') ON DUPLICATE KEY UPDATE ms_2e794a8f = VALUES(ms_2e794a8f), tg_2f997592 = VALUES(tg_2f997592), tg_9a7bbe6f = VALUES(tg_9a7bbe6f);
+
+UPDATE tg_ba8d_970b4d64d880
+SET sd_insert = '38e6a548-94f3-4186-8cfb-ec16eedc7263',
+    sd_update = '38e6a548-94f3-4186-8cfb-ec16eedc7263',
+    sd_delete = '38e6a548-94f3-4186-8cfb-ec16eedc7263'
+WHERE tg_9a7bbe6f = '2c17d08d-0840-4e12-b626-350a763635f2';

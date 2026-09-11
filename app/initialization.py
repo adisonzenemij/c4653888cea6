@@ -55,8 +55,34 @@ def initialize_database() -> None:
                 f"ALTER TABLE `{user_table}` ADD CONSTRAINT `{role_foreign_key}` "
                 f"FOREIGN KEY (`tg_9a7bbe6f`) REFERENCES `{role_table}` (`id_universal`)"
             ))
+    role_permit_table = Tg8a26b478Model.__tablename__
+    permit_columns = {column["name"] for column in inspect(engine).get_columns(role_permit_table)}
+    for column in ("sd_insert", "sd_update", "sd_delete"):
+        if column not in permit_columns:
+            with engine.begin() as connection:
+                connection.execute(text(f"ALTER TABLE `{role_permit_table}` ADD COLUMN `{column}` VARCHAR(36) NULL"))
     for filename in SEED_FILES:
         _execute_seed_file(filename)
+    with engine.begin() as connection:
+        for column in ("sd_insert", "sd_update", "sd_delete"):
+            connection.execute(text(
+                f"UPDATE `{role_permit_table}` SET `{column}` = 'ecbec726-d783-4021-8b10-3dd4e9b1d2c4' "
+                f"WHERE `{column}` IS NULL"
+            ))
+    access_table = Tg2f997592Model.__tablename__
+    existing_permit_relations = {
+        foreign_key["constrained_columns"][0]
+        for foreign_key in inspect(engine).get_foreign_keys(role_permit_table)
+        if len(foreign_key.get("constrained_columns", [])) == 1
+        and foreign_key.get("referred_table") == access_table
+    }
+    for column in ("sd_insert", "sd_update", "sd_delete"):
+        if column not in existing_permit_relations:
+            with engine.begin() as connection:
+                connection.execute(text(
+                    f"ALTER TABLE `{role_permit_table}` ADD CONSTRAINT `fk_{role_permit_table}_{column}` "
+                    f"FOREIGN KEY (`{column}`) REFERENCES `{access_table}` (`id_universal`)"
+                ))
     # Roles created before Roles Módulos existed receive the same safe default.
     with SessionLocal() as db:
         denied = db.scalar(select(Tg2f997592Model).where(Tg2f997592Model.fd_name == "Denegado"))
