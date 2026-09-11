@@ -41,6 +41,19 @@ def initialize_database() -> None:
     if "tg_9a7bbe6f" not in {column["name"] for column in inspector.get_columns(user_table)}:
         with engine.begin() as connection:
             connection.execute(text(f"ALTER TABLE `{user_table}` ADD COLUMN tg_9a7bbe6f VARCHAR(36) NULL"))
+    role_table = Tg9a7bbe6fModel.__tablename__
+    role_foreign_key = "fk_tg_a814_b7308901c01f_role_data"
+    has_role_relation = any(
+        foreign_key.get("constrained_columns") == ["tg_9a7bbe6f"]
+        and foreign_key.get("referred_table") == role_table
+        for foreign_key in inspect(engine).get_foreign_keys(user_table)
+    )
+    if not has_role_relation:
+        with engine.begin() as connection:
+            connection.execute(text(
+                f"ALTER TABLE `{user_table}` ADD CONSTRAINT `{role_foreign_key}` "
+                f"FOREIGN KEY (`tg_9a7bbe6f`) REFERENCES `{role_table}` (`id_universal`)"
+            ))
     for filename in SEED_FILES:
         _execute_seed_file(filename)
 
