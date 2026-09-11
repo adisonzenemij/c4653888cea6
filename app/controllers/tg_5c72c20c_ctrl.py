@@ -25,7 +25,7 @@ def login(payload: LoginSchema, db: Session = Depends(get_db)):
 def current_user_permissions(current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
     user = db.scalar(select(Tg5c72c20cModel).where(Tg5c72c20cModel.fd_login == current_user))
     if not user or not user.tg_9a7bbe6f:
-        return {"role": None, "permissions": []}
+        return {"role": None, "permissions": [], "module_permissions": []}
     role = db.get(Tg9a7bbe6fModel, user.tg_9a7bbe6f)
     rows = db.execute(
         select(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name, Tg2f997592Model.fd_name, Ms2e794a8fModel.fd_client)
@@ -36,7 +36,7 @@ def current_user_permissions(current_user: str = Depends(get_current_user), db: 
         .order_by(Ms8b6bd18aModel.fd_product, Ms2e794a8fModel.fd_name)
     ).all()
     module_rows = db.execute(
-        select(Ms8b6bd18aModel.fd_product, Tg2f997592Model.fd_name)
+        select(Ms8b6bd18aModel.id_universal, Ms8b6bd18aModel.fd_product, Tg2f997592Model.fd_name)
         .join(Tg8a2579bfModel, Tg8a2579bfModel.ms_8b6bd18a == Ms8b6bd18aModel.id_universal)
         .join(Tg2f997592Model, Tg2f997592Model.id_universal == Tg8a2579bfModel.tg_2f997592)
         .where(Tg8a2579bfModel.tg_9a7bbe6f == user.tg_9a7bbe6f)
@@ -45,6 +45,9 @@ def current_user_permissions(current_user: str = Depends(get_current_user), db: 
     return {"role": role.fd_name if role else None, "permissions": [
         {"module": module, "resource": resource, "access": access, "client": client}
         for module, resource, access, client in rows
-    ], "module_permissions": [{"module": module, "access": access} for module, access in module_rows]}
+    ], "module_permissions": [
+        {"module_id": module_id, "module": module, "access": access}
+        for module_id, module, access in module_rows
+    ]}
 
 router.include_router(create_crud_router("/users", ["Usuarios"], Tg5c72c20cService, CreateSchema, UpdateSchema, ResponseSchema))

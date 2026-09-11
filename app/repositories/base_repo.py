@@ -3,25 +3,9 @@ from __future__ import annotations
 from typing import Generic, TypeVar
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from app.models.entities_model import Ms2e794a8fModel
 
 ModelT = TypeVar("ModelT")
-
-TABLE_LABELS = {
-    "sd_a1bb_a6baddf4c35a": "Orígenes CORS",
-    "sd_a9da_8e0684f3f419": "Métodos",
-    "pm_a0da_73b502c724d5": "Servicios",
-    "pm_8f13_174467919cda": "Recursos",
-    "pm_b5eb_65d1aeb635fc": "Sociedades",
-    "tg_a814_b7308901c01f": "Usuarios",
-    "pm_ac73_a0c3754a0c60": "Anónimos",
-    "pm_bfe4_0a191a6f082d": "Alcances",
-    "pm_a9e4_1879447f9657": "Tipos",
-    "pm_a98d_4efe1131fd87": "Encuestas",
-    "pm_898e_48db3e1fb7b8": "Preguntas",
-    "pm_96ee_18d1272728c6": "Valores",
-    "pm_9482_b7b3bf232a17": "Respuestas",
-}
-
 
 class BaseRepository(Generic[ModelT]):
     def __init__(self, db: Session, model: type[ModelT]):
@@ -36,12 +20,11 @@ class BaseRepository(Generic[ModelT]):
         return self._with_associated(items), total
 
     def _with_associated(self, items: list[ModelT]) -> list[ModelT]:
-        """Attach the inbound-relation count used by the generic CRUD tables."""
+        """Attach inbound-relation details used by the generic CRUD tables."""
         for item in items:
-            item.fd_associated = sum(
-                int(reference["records"])
-                for reference in self.referencing_modules(item)
-            )
+            details = self.referencing_modules(item)
+            item.fd_associated = bool(details)
+            item.fd_association_details = details
         return items
 
     def get(self, item_id: str) -> ModelT | None:
@@ -82,12 +65,31 @@ class BaseRepository(Generic[ModelT]):
                     )
                 ) or 0
                 if count:
-                    label = TABLE_LABELS.get(table.name, table.name)
-                    references[label] = references.get(label, 0) + count
+                    references[table.name] = references.get(table.name, 0) + int(count)
+        resource_names = self._resource_names_by_table()
         return [
-            {"module": module, "records": count}
-            for module, count in references.items()
+            {
+                # ``module`` is retained for the delete-conflict API.
+                "module": resource_names.get(table_name, table_name),
+                "resource": resource_names.get(table_name, table_name),
+                "records": count,
+            }
+            for table_name, count in references.items()
         ]
+
+    def _resource_names_by_table(self) -> dict[str, str]:
+        names: dict[str, str] = {}
+        resources = self.db.execute(select(
+            Ms2e794a8fModel.id_universal,
+            Ms2e794a8fModel.fd_entity,
+            Ms2e794a8fModel.fd_name,
+        ))
+        for resource in resources:
+            uuid_parts = resource.id_universal.split("-")
+            prefix = resource.fd_entity.split("_", 1)[0]
+            if len(uuid_parts) == 5 and prefix:
+                names[f"{prefix}_{uuid_parts[-2]}_{uuid_parts[-1]}"] = resource.fd_name
+        return names
 
     def clear_unused(self) -> dict[str, int]:
         """Remove rows only when no other mapped table references them."""
