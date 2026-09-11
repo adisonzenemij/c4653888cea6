@@ -5,7 +5,7 @@ from datetime import date, datetime, time, timedelta
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 
-from app.models.entities_model import Pm1a4a8cd7Model, Pm3d86d159Model, Pm4d802b91Model, Ms2e794a8fModel, Tg2f997592Model, Tg8a26b478Model, Tg9a7bbe6fModel
+from app.models.entities_model import Pm1a4a8cd7Model, Pm3d86d159Model, Pm4d802b91Model, Ms2e794a8fModel, Ms8b6bd18aModel, Tg2f997592Model, Tg8a2579bfModel, Tg8a26b478Model, Tg9a7bbe6fModel
 from app.services.base_srvc import BaseService
 from app.security.security import pwd_context
 from app.repositories.entity_repos import *
@@ -40,6 +40,12 @@ class Tg9a7bbe6fService(BaseService):
             for resource in db.scalars(select(Ms2e794a8fModel)):
                 db.add(Tg8a26b478Model(
                     ms_2e794a8f=resource.id_universal,
+                    tg_2f997592=denied.id_universal,
+                    tg_9a7bbe6f=role.id_universal,
+                ))
+            for module in db.scalars(select(Ms8b6bd18aModel)):
+                db.add(Tg8a2579bfModel(
+                    ms_8b6bd18a=module.id_universal,
                     tg_2f997592=denied.id_universal,
                     tg_9a7bbe6f=role.id_universal,
                 ))

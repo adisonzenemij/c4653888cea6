@@ -57,6 +57,17 @@ def initialize_database() -> None:
             ))
     for filename in SEED_FILES:
         _execute_seed_file(filename)
+    # Roles created before Roles Módulos existed receive the same safe default.
+    with SessionLocal() as db:
+        denied = db.scalar(select(Tg2f997592Model).where(Tg2f997592Model.fd_name == "Denegado"))
+        if denied:
+            modules = list(db.scalars(select(Ms8b6bd18aModel)))
+            for role in db.scalars(select(Tg9a7bbe6fModel)):
+                current = set(db.scalars(select(Tg8a2579bfModel.ms_8b6bd18a).where(Tg8a2579bfModel.tg_9a7bbe6f == role.id_universal)))
+                for module in modules:
+                    if module.id_universal not in current:
+                        db.add(Tg8a2579bfModel(ms_8b6bd18a=module.id_universal, tg_2f997592=denied.id_universal, tg_9a7bbe6f=role.id_universal))
+            db.commit()
 
 
 def cors_origins() -> list[str]:
