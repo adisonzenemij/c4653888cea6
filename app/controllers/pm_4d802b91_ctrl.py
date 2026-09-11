@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config.database import get_db
 from app.controllers.crud_ctrl import create_crud_router
-from app.models.entities_model import Pm0acc84aeModel, Pm0d3dc00eModel, Pm9a582ff6Model
+from app.models.entities_model import Pm0acc84aeModel, Pm0d3dc00eModel, Pm9a582ff6Model, Tg5c72c20cModel, Tg9a7bbe6fModel
+from app.dependencies.dependencies import get_current_user
 from app.services.pm_1a4a8cd7_srvc import Pm1a4a8cd7Service
 from app.services.pm_4d802b91_srvc import Pm4d802b91Service
 from app.schemas.pm_4d802b91_schema import CreateSchema, UpdateSchema, ResponseSchema
@@ -13,13 +14,24 @@ from app.services.survey_autofill_srvc import SurveyAutoFillService
 router = create_crud_router("/surveys", ["Encuestas"], Pm4d802b91Service, CreateSchema, UpdateSchema, ResponseSchema, {"list", "page", "create", "update", "delete"})
 
 
+def require_master(current_user: str = Depends(get_current_user), db: Session = Depends(get_db)) -> str:
+    role_name = db.scalar(
+        select(Tg9a7bbe6fModel.fd_name)
+        .join(Tg5c72c20cModel, Tg5c72c20cModel.tg_9a7bbe6f == Tg9a7bbe6fModel.id_universal)
+        .where(Tg5c72c20cModel.fd_login == current_user)
+    )
+    if role_name != "Master":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Autocompletar solo está disponible para el rol Master.")
+    return current_user
+
+
 @router.get("/autofill-capacity", summary="Capacidad de memoria para bots")
-def autofill_capacity(bots: int = Query(1, ge=1, le=10)):
+def autofill_capacity(bots: int = Query(1, ge=1, le=10), _: str = Depends(require_master)):
     return SurveyAutoFillService.memory_capacity(bots)
 
 
 @router.post("/{survey_id}/autofill", summary="Autocompletar encuesta con Chromium")
-def autofill_survey(survey_id: str, payload: AutoFillSchema, db: Session = Depends(get_db)):
+def autofill_survey(survey_id: str, payload: AutoFillSchema, db: Session = Depends(get_db), _: str = Depends(require_master)):
     return SurveyAutoFillService(db).run(survey_id, **payload.model_dump())
 
 
